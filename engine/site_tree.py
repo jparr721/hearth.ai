@@ -1,11 +1,11 @@
-from typing import List
+from typing import List, Any
 from urllib.parse import urlparse
 
 from web_entity import WebEntity
 
 
 class Node(object):
-    def __init__(self, entity: WebEntity, children: List[Node] = None):
+    def __init__(self, entity: WebEntity, children: List[Any] = None):
         self.entity = entity
         self.children = children
         # Make a lookup dict to easily find child pices.
