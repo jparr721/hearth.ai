@@ -1,9 +1,5 @@
 import logging
-import requests
-from requests.exceptions import ConnectionError
-
-from borg import Borg
-from utils import RobotsNotFoundException
+import urllib.robotparser
 
 
 class Base:
@@ -19,17 +15,6 @@ class Base:
         self.logger = logging.getLogger(__name__)
         self.url = url
 
-    def parse_robots(self):
-        try:
-            r = requests.get(f"{self.url}/robots.txt")
-            if r.status_code != 200:
-                raise RobotsNotFoundException("No robots.txt file found")
-
-            # Split robots on new line
-            robots = [line for line in r.text.split("\n")]
-
-            self.borg = Borg(robots)
-
-        except ConnectionError:
-            self.logger.error("Failed to fetch url")
-            raise ConnectionError("Invalid Url Supplied")
+        self.rp = urllib.robotparser.RobotFileParser()
+        self.rp.set_url(f"{self.url}/robots.txt")
+        self.rp.read()
