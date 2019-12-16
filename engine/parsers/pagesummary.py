@@ -22,15 +22,16 @@ class OpenGraph:
         if not url.startswith("http") or not url.startswith("https"):
             raise ValueError("Malformed url, please make sure it's a full url")
 
-        html = self._fetch_html(url)
-        doc = BeautifulSoup(html)
+        def read(self):
+            html = self._fetch_html(url)
+            doc = BeautifulSoup(html)
 
-        # Page composition is what we use to track all of our parsed info
-        self.pageComposition = {
-            "meta": self._get_meta_info(doc),
-            "images": self._get_img(doc),
-            "og": self._get_og(doc),
-        }
+            # Page composition is what we use to track all of our parsed info
+            self.pageComposition = {
+                "meta": self._get_meta_info(doc),
+                "images": self._get_img(doc),
+                "og": self._get_og(doc),
+            }
 
         def _fetch_html(self, url: str):
             raw = urllib.request.urlopen(url)
@@ -38,7 +39,10 @@ class OpenGraph:
             return html
 
         def _get_meta_info(doc: BeautifulSoup):
-            pass
+            title = doc.find("title")
+            description = doc.find("meta", attrs={"name": "description"})
+
+            return {"title": title, "description": description}
 
         def _get_og(doc: BeautifulSoup):
             """
@@ -54,6 +58,7 @@ class OpenGraph:
             dict
                 Dict of open graph tags and their content
             """
+
             def __where(tag: bs4.element.Tag):
                 keys = tag.attrs.keys()
 
@@ -77,5 +82,7 @@ class OpenGraph:
 
             return og_meta
 
-        def _get_img(doc: BeautifulSoup):
-            pass
+        def _get_img(self, doc: BeautifulSoup):
+            imgs = [{"width": img.attrs.get("width", None), "height": img.attrs.get("height", None), "url": img.attrs.get("src", None)} for img in doc.find_all("img")]
+
+            return imgs
