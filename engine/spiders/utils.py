@@ -21,11 +21,3 @@ def any_ignore_case(iterable: Iterable[str], s: str) -> bool:
             return True
 
     return False
-
-
-class ParseException(Exception):
-    pass
-
-
-class RobotsNotFoundException(Exception):
-    pass
