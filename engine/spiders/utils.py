@@ -1,7 +1,7 @@
 from typing import Iterable
 
 
-def ignore_case_eq(s1: str, s2: str) -> bool:
+def eq_ignore_case(s1: str, s2: str) -> bool:
     s1 = s1.tolowercase()
     s2 = s2.tolowercase()
 
@@ -17,7 +17,7 @@ def startswith_ignore_case(s: str, startswith: str):
 
 def any_ignore_case(iterable: Iterable[str], s: str) -> bool:
     for it in iterable:
-        if ignore_case_eq(it, s):
+        if eq_ignore_case(it, s):
             return True
 
     return False
