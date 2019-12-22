@@ -44,7 +44,7 @@ def get_robots(url: str):
     return rp
 
 
-def read(url: str, timeout: int):
+def read(url: str, timeout: int = 30):
     html = urllib.request.urlopen(url, timeout=timeout)
     html = html.read()
 
@@ -55,7 +55,9 @@ def serial_bulk_query(url_list: List[str], delay: int = None) -> List[Any]:
     return {url: read(url) for url in url_list if time.sleep(delay) is None}
 
 
-def concurrent_bulk_query(url_list: List[str], delay: int = None) -> List[Any]:
+def concurrent_bulk_query(
+    url_list: List[str], delay: int = None
+) -> Dict[str, str]:
     # Get our number of threads
     worker_count = multiprocessing.cpu_count()
 
@@ -109,10 +111,9 @@ def concurrent_batch_process_page_data(
         max_workers=worker_count
     ) as executor:
         # Begin thread matching
+        kwargs = {"features": "html.parser"}
         futures = {
-            executor.submit(
-                BeautifulSoup, html, kwargs={"features": "html.parser"}
-            ): url
+            executor.submit(BeautifulSoup, html, **kwargs): url
             for url, html in page_data.items()
         }
 
