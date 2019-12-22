@@ -40,12 +40,12 @@ def biz_query(phrase: str, location: str, category: str = None) -> List[str]:
     # Get robots.txt to validate requests
     robots = get_robots("https://www.yelp.com/robots.txt")
 
-    if not robots.can_fetch(GENERAL_SEARCH_URL):
+    if not robots.can_fetch("Googlebot", GENERAL_SEARCH_URL):
         raise LookupError("Url is restricted from scraping")
 
     # Hit search with url encoded criteria
     find_desc = f"find_desc={urllib.parse.quote_plus(phrase)}"
-    find_loc = f"find_loc{urllib.parse.quote_plus(location)}"
+    find_loc = f"find_loc={urllib.parse.quote_plus(location)}"
 
     params = [find_desc, find_loc]
 
@@ -55,6 +55,7 @@ def biz_query(phrase: str, location: str, category: str = None) -> List[str]:
 
     # Initiate query
     compiled_url = GENERAL_SEARCH_URL + "&".join(params)
+    print("searching: ", compiled_url)
 
     # Return results
     html = read(compiled_url)
@@ -63,3 +64,9 @@ def biz_query(phrase: str, location: str, category: str = None) -> List[str]:
     parsed = BeautifulSoup(html, features="html.parser")
 
     # Find all <a /> tags where href.startswith('/biz')
+    biz_links = [
+        link.attrs.get("href")
+        for link in parsed.find_all("a")
+        if link.attrs.get("href", None)
+        and link.attrs.get("href").startswith("/biz")
+    ]

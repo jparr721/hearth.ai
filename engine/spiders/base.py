@@ -44,7 +44,7 @@ def get_robots(url: str):
     return rp
 
 
-def read(url: str, timeout: int):
+def read(url: str, timeout: int = 30):
     html = urllib.request.urlopen(url, timeout=timeout)
     html = html.read()
 
