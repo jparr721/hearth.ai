@@ -1,26 +1,62 @@
 from collections import defaultdict
 from functools import cached_property, lru_cache
-from typing import List, Dict
+from typing import Dict
 
 
 class Vocabulary:
-    def __init__(self):
-        self.token_to_index = defaultdict(int)
+    def __init__(self, unk_token: str = "@", token_to_idx=None):
+        self.unk_token = unk_token
+        self.token_to_index = (
+            token_to_idx if token_to_idx else defaultdict(int)
+        )
         self.index_to_token = defaultdict(str)
 
+    @cached_property
+    def serialize(self):
+        return {
+            "token_to_index": self.token_to_index,
+            "unk_token": self.unk_token,
+        }
 
-@cached_property
-def serialize_vocabulary(token_to_index: Dict[str, str], add_unk, unk_token):
-    return {
-        "token_to_index": token_to_index,
-        "add_unk": add_unk,
-        "unk_token": unk_token,
-    }
+    @classmethod
+    @cached_property
+    def from_serialized(cls, contents):
+        return cls(**contents)
 
 
-@cached_property
-def from_serialized_vocabulary(contents):
-    return serialize_vocabulary(**contents)
+class SequenceVocabulary(Vocabulary):
+    def __init__(
+        self,
+        unk_token="@",
+        mask_token="<MASK>",
+        begin_seq_token="<BEGIN>",
+        end_seq_token="<END>",
+    ):
+        super(SequenceVocabulary, self).__init__(unk_token)
+
+        self.mask_token = mask_token
+        self.unk_token = unk_token
+        self.begin_seq_token = begin_seq_token
+        self.end_seq_token = end_seq_token
+
+        self.mask_index = add_token(self, self.mask_token)
+        self.unk_index = add_token(self, self.unk_token)
+        self.begin_seq_index = add_token(self, self.begin_seq_token)
+        self.end_seq_index = add_token(self, self.end_seq_token)
+
+    @cached_property
+    def serialize(self):
+        return {
+            "unk_token": self.unk_token,
+            "mask_token": self.mask_token,
+            "begin_seq_token": self.begin_seq_token,
+            "end_seq_token": self.end_seq_token,
+        }
+
+    @classmethod
+    @cached_property
+    def from_serialized(cls, contents):
+        return cls(**contents)
 
 
 def add_token(
