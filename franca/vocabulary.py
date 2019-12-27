@@ -59,6 +59,10 @@ class SequenceVocabulary(Vocabulary):
         return cls(**contents)
 
 
+class RnnSequenceVocabulary(SequenceVocabulary):
+    pass
+
+
 def add_token(
     vocabulary: Vocabulary, token: str,
 ):
