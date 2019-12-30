@@ -35,7 +35,7 @@ def one_hot_vectorize2d(
 
 @cached_property
 def vectorize_dataframe(
-    df: pd.DataFrame, words_col: str, classification_col: str
+    df: pd.DataFrame, X: str, target: str
 ) -> Tuple[Dict[int, str]]:
     words_vocab = Vocabulary()
     classification_vocab = Vocabulary()
@@ -43,10 +43,14 @@ def vectorize_dataframe(
     max_word_length = 0
 
     for i, r in df.iterrows():
-        max_word_length = max(max_word_length, len(r[words_col]))
+        max_word_length = max(max_word_length, len(r[X]))
 
-        for letter in r[words_col]:
+        for letter in r[X]:
             add_token(words_vocab, letter)
-        add_token(classification_vocab, r[classification_col])
+        add_token(classification_vocab, r[target])
 
     return (words_vocab, classification_vocab)
+
+@cached_property
+def vectorize_row():
+    pass
