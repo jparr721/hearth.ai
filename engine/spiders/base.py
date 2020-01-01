@@ -10,12 +10,14 @@ Please do not share this code outisde of hearth teams.
 import bs4
 import concurrent.futures
 import logging
+import geopy.geocoders import Nominatim
 import multiprocessing
 import time
 import urllib.robotparser
 
 from bs4 import BeautifulSoup
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
+from ..constants import GlobalConstants
 
 
 logger = logging.getLogger(__name__)
@@ -197,3 +199,10 @@ def get_img(doc: BeautifulSoup):
     ]
 
     return imgs
+
+def city_name_to_latlong(name: str) -> Tuple[str, str]:
+    geolocator = Nominatim(user_agent=GlobalConstants.USER_AGENT_NAME)
+
+    location = geolocator.geocode(name)
+
+    return location.latitude, location.longitude

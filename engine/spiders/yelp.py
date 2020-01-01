@@ -1,6 +1,6 @@
 """
-Base contains methods and functions for parsing and
-dealing with page metadata
+Yelp contains custom routines for parsing the yelp
+search engine
 
 Copyright 2020 hearth.ai
 
