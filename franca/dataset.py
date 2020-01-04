@@ -69,6 +69,9 @@ class DatasetGenerator(Dataset):
         """
         row = self.target_dc.iloc[index]
 
+        from_vector, to_vector = \
+            self.vectorizer
+
 
 def find_max_sequence(
     df: pd.DataFrame, col: str, with_unknowns: bool = 2

@@ -1,10 +1,9 @@
 import numpy as np
 import pandas as pd
 
-from collections import defaultdict
 from functools import cached_property
 from typing import List, Dict, Tuple
-from vocabulary import lookup_token, add_token, Vocabulary
+from vocabulary import lookup_token, add_token, Vocabulary, SequenceVocabulary
 
 
 @cached_property
@@ -51,6 +50,41 @@ def vectorize_dataframe(
 
     return (words_vocab, classification_vocab)
 
-@cached_property
-def vectorize_row():
-    pass
+
+def vectorize_sequence_string(
+    associated_vocab: SequenceVocabulary, input_string: str, vector_length=-1,
+) -> Tuple[List[str], List[str]]:
+    """
+    Vectorize a string into a vector of observations and targets
+
+    Parameters
+    ----------
+    input_string : str
+        The input string to be vectorized
+    vector_length : int
+        The argument which forces the length of the index vector
+
+    Returns
+    -------
+        Tuple[from_vector, to_vector]
+    """
+    indices = [associated_vocab.begin_seq_index]
+    indices.extend(
+        associated_vocab.lookup_token(token) for token in input_string
+    )
+    indices.append(associated_vocab.end_seq_index)
+
+    if vector_length < 0:
+        vector_length = len(indices) - 1
+
+    from_vector = np.empty(vector_length, dtype=np.int64)
+    from_indices = indices[:-1]
+    from_vector[: len(from_indices)] = from_indices
+    from_vector[len(from_indices) :] = associated_vocab.mask_index
+
+    to_vector = np.empty(vector_length, dtype=np.int64)
+    to_indices = indices[1:]
+    to_vector[: len(to_indices)] = to_indices
+    to_vector[len(to_indices) :] = associated_vocab.mask_index
+
+    return from_vector, to_vector
