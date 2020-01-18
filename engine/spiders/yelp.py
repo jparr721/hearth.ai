@@ -108,6 +108,9 @@ def read_reviews(parsed: BeautifulSoup) -> Dict[str, str]:
 
 
 if __name__ == "__main__":
+    """
+    For testing...
+    """
     biz_links = biz_query("churches", "Denver")
 
     print("loading pages")

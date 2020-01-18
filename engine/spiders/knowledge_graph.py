@@ -14,7 +14,7 @@ from ..constants import GlobalConstants
 
 from bs4 import BeautifulSoup
 from base import (
-    get_robots
+    get_robots,
     read,
     serial_bulk_query,
     concurrent_batch_process_page_data,
