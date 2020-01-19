@@ -1,9 +1,7 @@
 import json
 import os
-from urllib.parse import urlparse
-from collections import defaultdict
 from typing import List
-from ..base import serial_bulk_query, get_robots
+from ..base import serial_bulk_query
 
 
 class IndexerRecord:
@@ -46,7 +44,7 @@ class Indexer:
             self.local_index[record.category] = record.links
 
     def deserialize_index_file(self) -> None:
-        with open(self.index_file, "a") as f:
+        with open(self.index_file, "r") as f:
             self.local_index = json.load(f)
 
     def serialize_index_file(self, preserve_local_copy=False) -> None:
@@ -54,12 +52,12 @@ class Indexer:
             json.dump(self.local_index, f)
 
             if not preserve_local_copy:
-                self.local_index = defaultdict(list)
+                self.local_index = {}
 
-    def mass_indexer_query_by_category(self, category: str) -> List[str]:
+    def mass_indexer_query_by_category(self, category: str, delay: int = 1) -> List[str]:
         if not self.local_index:
             raise AttributeError("Local index is empty")
 
         links = self.local_index[category]
 
-        return serial_bulk_query(links)
+        return serial_bulk_query(links, delay)

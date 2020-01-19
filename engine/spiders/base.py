@@ -48,7 +48,7 @@ def read(url: str, timeout: int = 30):
     return html
 
 
-def serial_bulk_query(url_list: List[str], delay: int = None) -> List[Any]:
+def serial_bulk_query(url_list: List[str], delay: int = 0) -> Dict[str, str]:
     return {url: read(url) for url in url_list if time.sleep(delay) is None}
 
 

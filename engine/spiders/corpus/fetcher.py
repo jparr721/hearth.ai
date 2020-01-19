@@ -12,19 +12,20 @@ from typing import Dict, List
 from bs4 import BeautifulSoup
 from ..base import concurrent_bulk_query, concurrent_batch_process_page_data
 from ..utils import eq_ignore_case
-from ...constants import GlobalConstants
-from nltk import sent_tokenize, wordpunct_tokenize
+from nltk import sent_tokenize, wordpunct_tokenize, download
+
+download("punkt")
 
 
 logger = logging.getLogger(__name__)
-TAGS = ["h1", "h2", "h3", "h4", "h5", "h6", "h7", "p", "li"]
+TAGS = ["h1", "h2", "h3", "h4", "h5", "h6", "h7", "p"]
 
 
 def serial_parse_reader_view(
     parsed: Dict[str, BeautifulSoup]
 ) -> Dict[str, List[str]]:
     reader_view = {
-        url: [element for element in html.find_all(TAGS)]
+        url: [element.text for element in html.find_all(TAGS)]
         for url, html in parsed.items()
     }
 
@@ -77,9 +78,10 @@ def unwrap_context_and_extract(
     """
     ret = []
 
-    for _, text in structured_reader_view.items():
-        for sentence in sent_tokenize(text):
-            ret.append(sentence)
+    for _, textlist in structured_reader_view.items():
+        for text in textlist:
+            for sentence in sent_tokenize(text):
+                ret.append(sentence)
 
     if eq_ignore_case("words", unwrap_returns):
         newret = []

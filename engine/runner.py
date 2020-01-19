@@ -37,4 +37,16 @@ def run_reader():
     indexer.deserialize_index_file()
 
     # Now, run the query system
-    linkdata = indexer.mass_indexer_query_by_category("church")
+    linkdata = indexer.mass_indexer_query_by_category("churches")
+
+    parsed = concurrent_batch_process_page_data(linkdata)
+
+    reader = serial_parse_reader_view(parsed)
+
+    context = unwrap_context_and_extract(reader, "words")
+
+    print(context)
+
+
+if __name__ == "__main__":
+    run_reader()
