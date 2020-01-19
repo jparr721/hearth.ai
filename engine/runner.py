@@ -33,5 +33,8 @@ def run_reader():
     # Load our indexer
     indexer = Indexer()
 
-    # Deserialize base file into it
+    # Deserialize base file into itself
     indexer.deserialize_index_file()
+
+    # Now, run the query system
+    linkdata = indexer.mass_indexer_query_by_category("church")

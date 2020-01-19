@@ -5,6 +5,8 @@ black==19.10b0
 certifi==2019.11.28
 chardet==3.0.4
 Click==7.0
+geographiclib==1.50
+geopy==1.20.0
 idna==2.8
 nltk==3.4.5
 pathspec==0.6.0
