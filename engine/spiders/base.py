@@ -1,10 +1,6 @@
 """
 Base contains methods and functions for parsing and
 dealing with page metadata
-
-Copyright 2020 hearth.ai
-
-Please do not share this code outisde of hearth teams.
 """
 
 import bs4

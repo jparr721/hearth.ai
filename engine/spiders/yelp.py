@@ -1,10 +1,6 @@
 """
 Yelp contains custom routines for parsing the yelp
 search engine
-
-Copyright 2020 hearth.ai
-
-Please do not share this code outisde of hearth teams.
 """
 
 import urllib.parse

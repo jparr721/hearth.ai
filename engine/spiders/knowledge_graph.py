@@ -1,10 +1,6 @@
 """
 opengraph contains utilities for parsing open graph
 search data
-
-Copyright 2020 hearth.ai
-
-Please do not share this code outisde of hearth teams.
 """
 
 import urllib.parse
