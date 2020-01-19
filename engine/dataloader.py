@@ -74,6 +74,7 @@ def load_data():
 
     # Write to disk
     indexer.serialize_index_file(preserve_local_copy=False)
+    print("Save complete")
 
 
 def get_articles(url, base_url, path_to_follow):

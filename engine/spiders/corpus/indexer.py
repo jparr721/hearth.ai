@@ -28,7 +28,7 @@ class Indexer:
         index_file=f"{os.path.dirname(os.path.realpath(__file__))}/indexed.json",
     ):
         self.index_file = index_file
-        self.local_index = defaultdict(list)
+        self.local_index = {}
 
     def __repr__(self):
         print(f"out_file: {self.index_file}\n index: {repr(self.local_index)}")
