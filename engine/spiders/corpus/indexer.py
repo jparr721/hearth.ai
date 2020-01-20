@@ -4,16 +4,11 @@ from typing import List
 from ..base import serial_bulk_query
 
 
-class IndexerRecord:
-    def __init__(self, category: str, links: List[str]):
-        self.category = category
-        self.links = links
-
-
 class Indexer:
     """
     The indexer tool keeps track of lists of files for
-    use when scraping very large datasets
+    use when scraping very large datasets, works natively
+    with dicts to get json output
 
     Parameters
     ----------
@@ -23,10 +18,15 @@ class Indexer:
 
     def __init__(
         self,
+        local_index={}
         index_file=f"{os.path.dirname(os.path.realpath(__file__))}/indexed.json",
     ):
         self.index_file = index_file
-        self.local_index = {}
+
+        if not isinstance(local_index, dict):
+            raise ValueError(f"expected index of type 'dict', got '{type(local_index)}'")
+
+        self.local_index = local_index
 
     def __repr__(self):
         print(f"out_file: {self.index_file}\n index: {repr(self.local_index)}")
@@ -37,11 +37,11 @@ class Indexer:
         else:
             self.local_index[category] = records
 
-    def index(self, record: IndexerRecord) -> None:
-        if record.category in self.local_index:
-            self.local_index[record.category].extend(record.links)
+    def index(self, links, category) -> None:
+        if category in self.local_index:
+            self.local_index[category].extend(links)
         else:
-            self.local_index[record.category] = record.links
+            self.local_index[category] = links
 
     def deserialize_index_file(self) -> None:
         with open(self.index_file, "r") as f:
@@ -53,11 +53,3 @@ class Indexer:
 
             if not preserve_local_copy:
                 self.local_index = {}
-
-    def mass_indexer_query_by_category(self, category: str, delay: int = 1) -> List[str]:
-        if not self.local_index:
-            raise AttributeError("Local index is empty")
-
-        links = self.local_index[category]
-
-        return serial_bulk_query(links, delay)

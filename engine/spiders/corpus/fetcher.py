@@ -4,13 +4,16 @@ category and returns the derived text corpus
 """
 
 import bs4
+from collections import Counter
 import concurrent.futures
 import logging
 import multiprocessing
 from typing import Dict, List
+import string
+from nltk.stem import SnowballStemmer
 
 from bs4 import BeautifulSoup
-from ..base import concurrent_bulk_query, concurrent_batch_process_page_data
+from ..base import serial_bulk_query, concurrent_bulk_query, concurrent_batch_process_page_data
 from ..utils import eq_ignore_case
 from nltk import sent_tokenize, wordpunct_tokenize, download
 
@@ -74,7 +77,7 @@ def unwrap_context_and_extract(
         The url-indexed reader view content
     unwrap_returns : str, optional possible: ('words', 'sentences'),
     default: 'sentences'
-        What return type we'll be delivering
+        Output data shape
     """
     ret = []
 
@@ -91,3 +94,43 @@ def unwrap_context_and_extract(
         return newret
 
     return ret
+
+
+def raw_corpus_to_frequency_vector(raw_corpus: List[str]) -> Dict[str, int]:
+    """
+    Takes a araw list of strings and returns a frequency vector of
+    all of their counts
+
+    Parameters
+    ----------
+    raw_corpus : List[str]
+        The list of text that is being processed
+
+    Returns
+    -------
+    Dict[str, int] - The counter object of counts for each token
+    """
+    frequency_vector = {}
+
+    stemmer = SnowballStemmer("english")
+
+    lower_corpus = [text.lower() for text in raw_corpus]
+
+    stemmed_corpus = [
+        stemmer.stem(token)
+        for token in raw_corpus
+        if token not in string.punctuation
+    ]
+
+    return dict(Counter(stemmed_corpus))
+
+
+def mass_indexer_query_by_category(
+    indexer: Indexer, category: str, delay: int = 1
+) -> List[str]:
+    if not indexer.local_index:
+        raise AttributeError("Local index is empty")
+
+    links = indexer.local_index[category]
+
+    return serial_bulk_query(links, delay)

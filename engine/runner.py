@@ -11,25 +11,12 @@ from spiders.corpus.indexer import Indexer
 from spiders.corpus.fetcher import (
     serial_parse_reader_view,
     unwrap_context_and_extract,
+    raw_corpus_to_frequency_vector,
+    mass_indexer_query_by_category,
 )
 
-KNOWN_OPTS = ["reader"]
 
-
-def arg_parser(argv):
-    relevant_args = argv[1:]
-
-    argument = relevant_args[0]
-
-    if argument not in KNOWN_OPTS:
-        print("Arg not found!")
-        sys.exit(1)
-
-    if argument == "reader":
-        run_reader()
-
-
-def run_reader():
+def run_reader(category: str):
     # Load our indexer
     indexer = Indexer()
 
@@ -37,7 +24,7 @@ def run_reader():
     indexer.deserialize_index_file()
 
     # Now, run the query system
-    linkdata = indexer.mass_indexer_query_by_category("churches")
+    linkdata = mass_indexer_query_by_category(category)
 
     parsed = concurrent_batch_process_page_data(linkdata)
 
@@ -45,8 +32,13 @@ def run_reader():
 
     context = unwrap_context_and_extract(reader, "words")
 
-    print(context)
+    frequency_vector = raw_corpus_to_frequency_vector(context)
 
 
 if __name__ == "__main__":
-    run_reader()
+    category = sys.argv[1] if len(sys.argv) > 1 else None
+
+    if not category:
+        raise ValueError("Gimme an indexer category!")
+
+    run_reader(category)
