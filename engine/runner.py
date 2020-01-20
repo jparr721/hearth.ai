@@ -24,7 +24,7 @@ def run_reader(category: str):
     indexer.deserialize_index_file()
 
     # Now, run the query system
-    linkdata = mass_indexer_query_by_category(category)
+    linkdata = mass_indexer_query_by_category(indexer, category)
 
     parsed = concurrent_batch_process_page_data(linkdata)
 
@@ -33,6 +33,16 @@ def run_reader(category: str):
     context = unwrap_context_and_extract(reader, "words")
 
     frequency_vector = raw_corpus_to_frequency_vector(context)
+
+    frequency_vector_output_path = (
+        f"{os.path.dirname(os.path.realpath(__file__))}/freq.json"
+    )
+
+    data_indexer = Indexer(frequency_vector, frequency_vector_output_path)
+
+    data_indexer.serialize_index_file(preserve_local_copy=False)
+
+    print("Frequency vector written")
 
 
 if __name__ == "__main__":

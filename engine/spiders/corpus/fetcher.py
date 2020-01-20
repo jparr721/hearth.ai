@@ -13,7 +13,12 @@ import string
 from nltk.stem import SnowballStemmer
 
 from bs4 import BeautifulSoup
-from ..base import serial_bulk_query, concurrent_bulk_query, concurrent_batch_process_page_data
+from ..base import (
+    serial_bulk_query,
+    concurrent_bulk_query,
+    concurrent_batch_process_page_data,
+)
+from .indexer import Indexer
 from ..utils import eq_ignore_case
 from nltk import sent_tokenize, wordpunct_tokenize, download
 

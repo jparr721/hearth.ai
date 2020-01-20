@@ -18,7 +18,7 @@ class Indexer:
 
     def __init__(
         self,
-        local_index={}
+        local_index={},
         index_file=f"{os.path.dirname(os.path.realpath(__file__))}/indexed.json",
     ):
         self.index_file = index_file
